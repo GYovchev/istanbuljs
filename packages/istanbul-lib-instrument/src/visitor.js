@@ -377,8 +377,26 @@ class VisitState {
             };
         }
 
-        const name = path.node.id ? path.node.id.name : path.node.name;
-        const index = this.cov.newFunction(name, dloc, path.node.body.loc);
+        let className;
+        let parentPath = path.parentPath;
+        while(parentPath) {
+          if(parentPath.node.type === 'ClassDeclaration' && parentPath.node.id && parentPath.node.id.type === 'Identifier') {
+            className = parentPath.node.id.name;
+            break;
+          }
+          parentPath = parentPath.parentPath;
+        }
+      let name = path.node.key? path.node.key.name: (path.node.id ? path.node.id.name : path.node.name);
+        if(!className && path.parentPath.node.type === 'AssignmentExpression'
+          && path.parentPath.node.right === path.node
+          && path.parentPath.node.left.type === 'MemberExpression'
+          && path.parentPath.node.left.object.type === 'MemberExpression'
+          && path.parentPath.node.left.object.property.name === 'prototype'
+        ) {
+          name = path.parentPath.node.left.property.name;
+          className = path.parentPath.node.left.object.object.name
+        }
+        const index = this.cov.newFunction(name, className, dloc, path.node.body.loc);
         const increment = this.increase('f', index, null);
         const body = path.get('body');
         /* istanbul ignore else: not expected */
@@ -474,6 +492,19 @@ function coverAssignmentPattern(path) {
 }
 
 function coverFunction(path) {
+    // let className;
+    // let parentPath = path.parentPath;
+    // while(parentPath) {
+    //   if(parentPath.node.type === 'ClassDeclaration' && parentPath.node.id && parentPath.node.id.type === 'Identifier') {
+    //     className = parentPath.node.id.name;
+    //     break;
+    //   }
+    //   parentPath = parentPath.parentPath;
+    // }
+    // if(path.node.type === 'MethodDefinition' && path.node.value && path.node.value.type === 'FunctionExpression' && path.node.key && path.node.key.type === 'Identifier') {
+    //   path.node.value.id = path.node.key;
+    //   path.node.value.className = className;
+    // }
     this.insertFunctionCounter(path);
 }
 
@@ -667,7 +698,7 @@ const codeVisitor = {
     FunctionExpression: entries(coverFunction),
     LabeledStatement: entries(coverStatement),
     ConditionalExpression: entries(coverTernary),
-    LogicalExpression: entries(coverLogicalExpression)
+    LogicalExpression: entries(coverLogicalExpression),
 };
 const globalTemplateAlteredFunction = template(`
         var Function = (function(){}).constructor;

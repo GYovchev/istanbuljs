@@ -42,13 +42,14 @@ class SourceCoverage extends classes.FileCoverage {
         return s;
     }
 
-    newFunction(name, decl, loc) {
-        const f = this.meta.last.f;
+    newFunction(name, className, decl, loc) {
+      const f = this.meta.last.f;
         name = name || '(anonymous_' + f + ')';
         this.data.fnMap[f] = {
             name,
             decl: cloneLocation(decl),
             loc: cloneLocation(loc),
+            className,
             // DEPRECATED: some legacy reports require this info.
             line: loc && loc.start.line
         };

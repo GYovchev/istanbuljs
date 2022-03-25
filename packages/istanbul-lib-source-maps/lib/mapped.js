@@ -46,7 +46,7 @@ class MappedCoverage extends FileCoverage {
         return index;
     }
 
-    addFunction(name, decl, loc, hits) {
+    addFunction(name, className, decl, loc, hits) {
         const key = 'f:' + locString(decl);
         const { meta } = this;
         let index = meta.seen[key];
@@ -58,6 +58,7 @@ class MappedCoverage extends FileCoverage {
             name = name || `(unknown_${index})`;
             this.fnMap[index] = {
                 name,
+                className,
                 decl: this.cloneLocation(decl),
                 loc: this.cloneLocation(loc)
             };
