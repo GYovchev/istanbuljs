@@ -387,14 +387,18 @@ class VisitState {
           parentPath = parentPath.parentPath;
         }
       let name = path.node.key? path.node.key.name: (path.node.id ? path.node.id.name : path.node.name);
-        if(!className && path.parentPath.node.type === 'AssignmentExpression'
+        if(path.parentPath.node.type === 'AssignmentExpression'
           && path.parentPath.node.right === path.node
           && path.parentPath.node.left.type === 'MemberExpression'
           && path.parentPath.node.left.object.type === 'MemberExpression'
           && path.parentPath.node.left.object.property.name === 'prototype'
         ) {
-          name = path.parentPath.node.left.property.name;
-          className = path.parentPath.node.left.object.object.name
+          if(!name) {
+            name = path.parentPath.node.left.property.name;
+          }
+          if(!className) {
+            className = path.parentPath.node.left.object.object.name
+          }
         }
         const index = this.cov.newFunction(name, className, dloc, path.node.body.loc);
         const increment = this.increase('f', index, null);
