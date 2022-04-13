@@ -8,6 +8,9 @@
     "fix": "eslint . --fix",
     "postinstall": "bash scripts/install.sh"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/GYovchev"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:GYovchev/istanbuljs.git"
