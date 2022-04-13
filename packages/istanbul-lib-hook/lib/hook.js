@@ -42,9 +42,7 @@ function transformFn(matcher, transformer, verbose) {
                     '; return original code'
                 );
                 console.error(ex.message || String(ex));
-                if (verbose) {
-                    console.error(ex.stack);
-                }
+                console.error(ex.stack);
                 transformed = code;
             }
         } else {
