@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:istanbuljs/istanbuljs.git"
+    "url": "git@github.com:GYovchev/istanbuljs.git"
   },
   "keywords": [
     "istanbuljs",
