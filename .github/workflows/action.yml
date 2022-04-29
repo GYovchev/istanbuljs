@@ -16,7 +16,7 @@ jobs:
           registry-url: https://npm.pkg.github.com/
           scope: '@GYovchev'
       - run: npm install
-      - run: npm version patch -f
+      - run: npm --no-git-tag-version version patch -f
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_GITHUB_TOKEN}}
