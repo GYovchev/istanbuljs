@@ -410,12 +410,12 @@ class VisitState {
         const body = path.get('body');
         /* istanbul ignore else: not expected */
         if (body.isBlockStatement()) {
-            // body.node.body.unshift(T.variableDeclaration('let', [
-            //   T.variableDeclarator('__istanbuljs_coverage_state',
-            //     T.callExpression(
-            //       T.memberExpression(
-            //         T.identifier('JSON'), T.identifier('parse'),
-            //         [T.callExpression(T.identifier(this.varName), [])])))]));
+            body.node.body.unshift(T.variableDeclaration('let', [
+              T.variableDeclarator('__istanbuljs_coverage_state',
+                T.callExpression(
+                  T.memberExpression(
+                    T.identifier('JSON'), T.identifier('parse'),
+                    [T.callExpression(T.identifier(this.varName), [])])))]));
             body.node.body.unshift(T.expressionStatement(increment));
         } else {
             console.error(
