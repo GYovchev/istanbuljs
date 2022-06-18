@@ -405,7 +405,8 @@ class VisitState {
                 T.variableDeclarator(T.identifier(this.localVarName),
                   T.callExpression(
                     T.memberExpression(
-                      T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(this.varName), [])]))]));
+                      T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.memberExpression(
+                      T.identifier('JSON'), T.identifier('stringify')), [T.callExpression(T.identifier(this.varName), [])])]))]));
             }
         } else {
             console.error(
@@ -855,11 +856,12 @@ function programVisitor(types, sourceFilePath = 'unknown.js', opts = {}) {
                 INITIAL: coverageNode,
                 HASH: T.stringLiteral(hash)
             });
-            path.node.body.unshift(T.variableDeclaration('let', [
+          path.node.body.unshift(T.variableDeclaration('let', [
               T.variableDeclarator(T.identifier(visitState.localVarName),
                 T.callExpression(
                   T.memberExpression(
-                    T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(visitState.varName), [])]))]));
+                    T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.memberExpression(
+                    T.identifier('JSON'), T.identifier('stringify')), [T.callExpression(T.identifier(visitState.varName), [])])]))]));
             // explicitly call this.varName to ensure coverage is always initialized
             path.node.body.unshift(
                 T.expressionStatement(
