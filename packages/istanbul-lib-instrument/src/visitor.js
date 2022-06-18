@@ -863,10 +863,10 @@ function programVisitor(types, sourceFilePath = 'unknown.js', opts = {}) {
             );
             path.node.body.unshift(cv);
             path.node.body.unshift(T.variableDeclaration('let', [
-              T.variableDeclarator(T.identifier(this.localVarName),
+              T.variableDeclarator(T.identifier(visitState.localVarName),
                 T.callExpression(
                   T.memberExpression(
-                    T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(this.varName), [])]))]));
+                    T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(visitState.varName), [])]))]));
             return {
                 fileCoverage: coverageData,
                 sourceMappingURL: visitState.sourceMappingURL
