@@ -752,7 +752,10 @@ function alreadyInstrumented(path, visitState) {
     return path.scope.hasBinding(visitState.varName);
 }
 function alreadyCreatedScopedLocalState(path, visitState) {
-  return path.scope.hasBinding(visitState.localVarName);
+  if(path == null) {
+    return false;
+  }
+  return path.scope.hasBinding(visitState.localVarName) || alreadyCreatedScopedLocalState(path.parentPath, visitState);
 }
 function shouldIgnoreFile(programNode) {
     return (
@@ -856,12 +859,6 @@ function programVisitor(types, sourceFilePath = 'unknown.js', opts = {}) {
                 INITIAL: coverageNode,
                 HASH: T.stringLiteral(hash)
             });
-          path.node.body.unshift(T.variableDeclaration('let', [
-              T.variableDeclarator(T.identifier(visitState.localVarName),
-                T.callExpression(
-                  T.memberExpression(
-                    T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.memberExpression(
-                    T.identifier('JSON'), T.identifier('stringify')), [T.callExpression(T.identifier(visitState.varName), [])])]))]));
             // explicitly call this.varName to ensure coverage is always initialized
             path.node.body.unshift(
                 T.expressionStatement(
