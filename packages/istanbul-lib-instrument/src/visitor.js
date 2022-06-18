@@ -399,12 +399,14 @@ class VisitState {
         const body = path.get('body');
         /* istanbul ignore else: not expected */
         if (body.isBlockStatement()) {
-          body.node.body.unshift(T.expressionStatement(increment));
-            body.node.body.unshift(T.variableDeclaration('let', [
-              T.variableDeclarator(T.identifier(this.localVarName),
-                T.callExpression(
-                  T.memberExpression(
-                    T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(this.varName), [])]))]));
+            body.node.body.unshift(T.expressionStatement(increment));
+            if(!alreadyCreatedScopedLocalState(path, this)) {
+              body.node.body.unshift(T.variableDeclaration('let', [
+                T.variableDeclarator(T.identifier(this.localVarName),
+                  T.callExpression(
+                    T.memberExpression(
+                      T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(this.varName), [])]))]));
+            }
         } else {
             console.error(
                 'Unable to process function body node type:',
@@ -748,6 +750,9 @@ const coverageTemplate = template(
 function alreadyInstrumented(path, visitState) {
     return path.scope.hasBinding(visitState.varName);
 }
+function alreadyCreatedScopedLocalState(path, visitState) {
+  return path.scope.hasBinding(visitState.localVarName);
+}
 function shouldIgnoreFile(programNode) {
     return (
         programNode.parent &&
@@ -857,6 +862,11 @@ function programVisitor(types, sourceFilePath = 'unknown.js', opts = {}) {
                 )
             );
             path.node.body.unshift(cv);
+            path.node.body.unshift(T.variableDeclaration('let', [
+              T.variableDeclarator(T.identifier(this.localVarName),
+                T.callExpression(
+                  T.memberExpression(
+                    T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(this.varName), [])]))]));
             return {
                 fileCoverage: coverageData,
                 sourceMappingURL: visitState.sourceMappingURL
