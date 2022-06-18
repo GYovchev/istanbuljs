@@ -1,6 +1,6 @@
 {
   "name": "@GYovchev/istanbuljs",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "monorepo containing the various nuts and bolts that facilitate istanbul.js test instrumentation",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha --timeout 30000 packages/*/test{,/*}.js",
