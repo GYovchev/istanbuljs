@@ -29,6 +29,7 @@ class VisitState {
         reportLogic = false
     ) {
         this.varName = genVar(sourceFilePath);
+        this.localVarName = '__istanbuljs_coverage_state';
         this.attrs = {};
         this.nextIgnore = null;
         this.cov = new SourceCoverage(sourceFilePath);
@@ -174,7 +175,7 @@ class VisitState {
             wrap(
                 T.memberExpression(
                     T.memberExpression(
-                        T.callExpression(T.identifier(this.varName), []),
+                        T.identifier(this.localVarName),
                         T.identifier(type)
                     ),
                     T.numericLiteral(id),
@@ -193,7 +194,7 @@ class VisitState {
             T.assignmentExpression(
                 '=',
                 T.memberExpression(
-                    T.callExpression(T.identifier(this.varName), []),
+                    T.identifier(this.localVarName),
                     T.identifier(tempName)
                 ),
                 node // Only evaluates once.
@@ -206,7 +207,7 @@ class VisitState {
                 )
             ),
             T.memberExpression(
-                T.callExpression(T.identifier(this.varName), []),
+                T.identifier(this.localVarName),
                 T.identifier(tempName)
             )
         ]);
@@ -216,7 +217,7 @@ class VisitState {
         return T.logicalExpression(
             '&&',
             T.memberExpression(
-                T.callExpression(T.identifier(this.varName), []),
+                T.identifier(this.localVarName),
                 T.identifier(tempName)
             ),
             T.logicalExpression(
@@ -233,10 +234,7 @@ class VisitState {
                                 ),
                                 [
                                     T.memberExpression(
-                                        T.callExpression(
-                                            T.identifier(this.varName),
-                                            []
-                                        ),
+                                        T.identifier(this.localVarName),
                                         T.identifier(tempName)
                                     )
                                 ]
@@ -244,10 +242,7 @@ class VisitState {
                         ),
                         T.memberExpression(
                             T.memberExpression(
-                                T.callExpression(
-                                    T.identifier(this.varName),
-                                    []
-                                ),
+                                T.identifier(this.localVarName),
                                 T.identifier(tempName)
                             ),
                             T.identifier('length')
@@ -266,10 +261,7 @@ class VisitState {
                                 ),
                                 [
                                     T.memberExpression(
-                                        T.callExpression(
-                                            T.identifier(this.varName),
-                                            []
-                                        ),
+                                        T.identifier(this.localVarName),
                                         T.identifier(tempName)
                                     )
                                 ]
@@ -287,10 +279,7 @@ class VisitState {
                                 ),
                                 [
                                     T.memberExpression(
-                                        T.callExpression(
-                                            T.identifier(this.varName),
-                                            []
-                                        ),
+                                        T.identifier(this.localVarName),
                                         T.identifier(tempName)
                                     )
                                 ]
@@ -411,7 +400,7 @@ class VisitState {
         /* istanbul ignore else: not expected */
         if (body.isBlockStatement()) {
             body.node.body.unshift(T.variableDeclaration('let', [
-              T.variableDeclarator(T.identifier('__istanbuljs_coverage_state'),
+              T.variableDeclarator(T.identifier(this.localVarName),
                 T.callExpression(
                   T.memberExpression(
                     T.identifier('JSON'), T.identifier('parse')), [T.callExpression(T.identifier(this.varName), [])]))]));
@@ -520,7 +509,6 @@ function coverFunction(path) {
     //   path.node.value.className = className;
     // }
     this.insertFunctionCounter(path);
-    this.insertLocalStateCoverageCounter(path);
 }
 
 function coverVariableDeclarator(path) {
