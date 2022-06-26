@@ -145,6 +145,7 @@ class VisitState {
         }
         // nuke all attributes for the node
         delete path.node.__cov__;
+        delete path.node.__functionHeader__;
     }
 
     // set a node attribute for the supplied node
@@ -399,8 +400,9 @@ class VisitState {
         const body = path.get('body');
         /* istanbul ignore else: not expected */
         if (body.isBlockStatement()) {
-            body.node.body.unshift(T.expressionStatement(increment));
-            if(!alreadyCreatedScopedLocalState(path, this)) {
+            if(!this.isLocalCovVarDeclared(body)) {
+              body.node.__functionHeader__ = true;
+              body.node.body.unshift(T.expressionStatement(increment));
               body.node.body.unshift(T.variableDeclaration('let', [
                 T.variableDeclarator(T.identifier(this.localVarName),
                   T.callExpression(
@@ -414,6 +416,16 @@ class VisitState {
                 path.node.type
             );
         }
+    }
+
+    isLocalCovVarDeclared(path) {
+      while(path.parentPath != null) {
+        if(path.node.__functionHeader__) {
+          return true;
+        }
+        path = path.parentPath
+      }
+      return false;
     }
 
     getBranchIncrement(branchName, loc) {
@@ -487,38 +499,37 @@ function entries(...enter) {
 }
 
 function coverStatement(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     this.insertStatementCounter(path);
 }
 
 /* istanbul ignore next: no node.js support */
 function coverAssignmentPattern(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     const n = path.node;
     const b = this.cov.newBranch('default-arg', n.loc);
     this.insertBranchCounter(path.get('right'), b);
 }
 
 function coverFunction(path) {
-    // let className;
-    // let parentPath = path.parentPath;
-    // while(parentPath) {
-    //   if(parentPath.node.type === 'ClassDeclaration' && parentPath.node.id && parentPath.node.id.type === 'Identifier') {
-    //     className = parentPath.node.id.name;
-    //     break;
-    //   }
-    //   parentPath = parentPath.parentPath;
-    // }
-    // if(path.node.type === 'MethodDefinition' && path.node.value && path.node.value.type === 'FunctionExpression' && path.node.key && path.node.key.type === 'Identifier') {
-    //   path.node.value.id = path.node.key;
-    //   path.node.value.className = className;
-    // }
     this.insertFunctionCounter(path);
 }
 
 function coverVariableDeclarator(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     this.insertStatementCounter(path.get('init'));
 }
 
 function coverClassPropDeclarator(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     this.insertStatementCounter(path.get('value'));
 }
 
@@ -572,6 +583,9 @@ function convertArrowExpression(path) {
 }
 
 function coverIfBranches(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     const n = path.node;
     const hint = this.hintFor(n);
     const ignoreIf = hint === 'if';
@@ -596,6 +610,9 @@ function createSwitchBranch(path) {
 }
 
 function coverSwitchCase(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     const T = this.types;
     const b = this.getAttr(path.parentPath.node, 'branchName');
     /* istanbul ignore if: paranoid check */
@@ -607,6 +624,9 @@ function coverSwitchCase(path) {
 }
 
 function coverTernary(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     const n = path.node;
     const branch = this.cov.newBranch('cond-expr', path.node.loc);
     const cHint = this.hintFor(n.consequent);
@@ -750,12 +770,6 @@ const coverageTemplate = template(
 // it's run through istanbul-lib-instrument.
 function alreadyInstrumented(path, visitState) {
     return path.scope.hasBinding(visitState.varName);
-}
-function alreadyCreatedScopedLocalState(path, visitState) {
-  if(path == null) {
-    return false;
-  }
-  return path.scope.hasBinding(visitState.localVarName) || alreadyCreatedScopedLocalState(path.parentPath, visitState);
 }
 function shouldIgnoreFile(programNode) {
     return (
