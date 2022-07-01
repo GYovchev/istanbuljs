@@ -605,6 +605,9 @@ function coverIfBranches(path) {
 }
 
 function createSwitchBranch(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     const b = this.cov.newBranch('switch', path.node.loc);
     this.setAttr(path.node, 'branchName', b);
 }
@@ -641,6 +644,9 @@ function coverTernary(path) {
 }
 
 function coverLogicalExpression(path) {
+    if(!this.isLocalCovVarDeclared(path)) {
+      return;
+    }
     const T = this.types;
     if (path.parentPath.node.type === 'LogicalExpression') {
         return; // already processed
