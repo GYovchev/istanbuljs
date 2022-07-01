@@ -188,6 +188,9 @@ class VisitState {
 
     // Reads the logic expression conditions and conditionally increments truthy counter.
     increaseTrue(type, id, index, node) {
+        if (!(path.node && path.node.loc)) {
+          return;
+        }
         const T = this.types;
         const tempName = `${this.varName}_temp`;
 
@@ -429,11 +432,17 @@ class VisitState {
     }
 
     getBranchIncrement(branchName, loc) {
+        if (!(path.node && path.node.loc)) {
+          return;
+        }
         const index = this.cov.addBranchPath(branchName, loc);
         return this.increase('b', branchName, index);
     }
 
     getBranchLogicIncrement(path, branchName, loc) {
+        if (!(path.node && path.node.loc)) {
+          return;
+        }
         const index = this.cov.addBranchPath(branchName, loc);
         return [
             this.increase('b', branchName, index),
