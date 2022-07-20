@@ -8,10 +8,6 @@
     "fix": "eslint . --fix",
     "postinstall": "bash scripts/install.sh"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:seal-labs/istanbuljs.git"
-  },
   "keywords": [
     "istanbuljs",
     "coverage",
