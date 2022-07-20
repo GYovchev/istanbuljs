@@ -1,6 +1,6 @@
 {
-  "name": "@GYovchev/istanbuljs",
-  "version": "2.0.17",
+  "name": "@seal-labs/cc",
+  "version": "0.0.1",
   "description": "monorepo containing the various nuts and bolts that facilitate istanbul.js test instrumentation",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha --timeout 30000 packages/*/test{,/*}.js",
@@ -8,24 +8,16 @@
     "fix": "eslint . --fix",
     "postinstall": "bash scripts/install.sh"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/GYovchev"
-  },
   "repository": {
     "type": "git",
-    "url": "git@github.com:GYovchev/istanbuljs.git"
+    "url": "git@github.com:seal-labs/istanbuljs.git"
   },
   "keywords": [
     "istanbuljs",
     "coverage",
     "nyc"
   ],
-  "author": "Ben Coe <ben@npmjs.com>",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/istanbuljs/istanbuljs/issues"
-  },
-  "homepage": "https://github.com/istanbuljs/istanbuljs",
   "devDependencies": {
     "babel-eslint": "^10.0.3",
     "coveralls": "^3.0.9",
@@ -38,7 +30,7 @@
     "glob": "^7.1.6",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
-    "prettier": "=1.18.2"
+    "prettier": "=1.18.2",
   },
   "nyc": {
     "reporter": [
